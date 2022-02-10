@@ -47,23 +47,8 @@ function load_mailbox(mailbox) {
     div.innerHTML = `${emails[email].sender} ${emails[email].subject} ${emails[email].timestamp}`;
     div.className = "email";
     document.querySelector('#emails-view').append(div);
-    div.onclick = function load_email() {
-      document.querySelector('#emails-view').style.display = 'none';
-      document.querySelector('#email-view').style.display = 'block';
-      fetch(`/emails/${emails[email].id}`)
-      .then(response => response.json())
-      .then(email => {
-      console.log(email);
-      document.querySelector('#email-view').innerHTML = ''
-      const head = document.createElement('div');
-      head.innerHTML = `From: ${email.sender}<br>To: ${email.recipients}<br>Subject: ${email.subject}<br>Time: ${email.timestamp}`;
-      document.querySelector('#email-view').append(head);
-      const body = document.createElement('p');
-      body.innerHTML = `<br>${email.body}`;
-      document.querySelector('#email-view').append(body);
-      });
+    div.addEventListener('click', () => load_email(emails[email].id));
 
-    }
   }
   
   });
@@ -89,12 +74,28 @@ function send_email() {
 }
 
 function load_email(id) {
+
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#email-view').style.display = 'block';
   fetch(`/emails/${id}`)
   .then(response => response.json())
   .then(email => {
-    // Print email
-    console.log(email);
-
-    // ... do something else with email ...
-});
+  console.log(email);
+  document.querySelector('#email-view').innerHTML = `
+  <div>From: ${email.sender}</div>
+  <div>To: ${email.recipients}</div>
+  <div>Subject: ${email.subject}</div>
+  <div>Timestamp: ${email.timestamp}</div>            
+  
+  <div class="email-buttons">
+      <button id="reply">Reply</button>
+      <button id="archive">${email["archived"] ? "Unarchive" : "Archive"}</button>
+  </div>
+  <hr>
+  <div>
+      ${email.body}
+  </div>
+`;
+  });
+  
 }
