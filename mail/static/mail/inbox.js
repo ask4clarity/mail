@@ -40,10 +40,16 @@ function load_mailbox(mailbox) {
   .then(emails => {
     // Print emails 
   console.log(emails);
-  // could have use foreach here!
+  // Loop through emails
   for (let email in emails) {
 
     const div = document.createElement('div');
+    if (emails[email].read && mailbox === 'inbox') {
+      div.style.backgroundColor = 'LightGrey';
+    }
+    else {
+      div.style.backgroundColor = 'white';
+    }
     div.innerHTML = `${emails[email].sender} ${emails[email].subject} ${emails[email].timestamp}`;
     div.className = "email";
     document.querySelector('#emails-view').append(div);
@@ -77,6 +83,14 @@ function load_email(id) {
 
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#email-view').style.display = 'block';
+  
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+            read: true
+    })
+  })
+
   fetch(`/emails/${id}`)
   .then(response => response.json())
   .then(email => {
