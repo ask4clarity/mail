@@ -19,10 +19,11 @@ function compose_email() {
   document.querySelector('#email-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
-  // Clear out composition fields
+
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+
 }
 
 function load_mailbox(mailbox) {
@@ -115,7 +116,6 @@ if (mailbox === 'sent') {
   document.querySelector('.email-buttons').style.display = 'none';
 }
 
-document.querySelector('#email-view')
 document.querySelector('#archive').addEventListener('click', () => {
   fetch(`/emails/${id}`, {
       method: 'PUT',
@@ -129,8 +129,26 @@ document.querySelector('#archive').addEventListener('click', () => {
   }); 
 })
 
+document.querySelector('#reply').addEventListener('click', () => {
+
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#email-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'block';
+  
+  document.querySelector('#compose-recipients').value = `${email.sender}`;
+  
+  if (email.subject.includes('Re:')) {
+    document.querySelector('#compose-subject').value = `${email.subject}`;
+  }
+  else {
+    document.querySelector('#compose-subject').value = `Re: ${email.subject}`;
+  }
+
+  document.querySelector('#compose-body').value = `"On ${email.timestamp} ${email.sender} wrote:"\n${email.body}\n` ;
+   
+})
 
 
-  });
+});
   
 }
