@@ -53,7 +53,7 @@ function load_mailbox(mailbox) {
     div.innerHTML = `${emails[email].sender} ${emails[email].subject} ${emails[email].timestamp}`;
     div.className = "email";
     document.querySelector('#emails-view').append(div);
-    div.addEventListener('click', () => load_email(emails[email].id));
+    div.addEventListener('click', () => load_email(emails[email].id, mailbox));
 
   }
   
@@ -79,7 +79,7 @@ function send_email() {
   return false;
 }
 
-function load_email(id) {
+function load_email(id, mailbox) {
 
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#email-view').style.display = 'block';
@@ -100,16 +100,37 @@ function load_email(id) {
   <div>To: ${email.recipients}</div>
   <div>Subject: ${email.subject}</div>
   <div>Timestamp: ${email.timestamp}</div>            
-  
-  <div class="email-buttons">
-      <button id="reply">Reply</button>
-      <button id="archive">${email["archived"] ? "Unarchive" : "Archive"}</button>
-  </div>
   <hr>
   <div>
       ${email.body}
   </div>
+  <hr>
+  <div class="email-buttons">
+  <button id="reply">Reply</button>
+  <button id="archive">${email["archived"] ? "Unarchive" : "Archive"}</button>
+  </div>  
 `;
+
+if (mailbox === 'sent') {
+  document.querySelector('.email-buttons').style.display = 'none';
+}
+
+document.querySelector('#email-view')
+document.querySelector('#archive').addEventListener('click', () => {
+  fetch(`/emails/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+          archived: !email.archived
+      })
+  })
+  .then(result => {
+    console.log(result);
+    load_mailbox('inbox');
+  }); 
+})
+
+
+
   });
   
 }
